@@ -92,13 +92,16 @@ jobs:
         if: failure()
         run: |
           terraform destroy -auto-approve -input=false
-          echo "Check if demo-project-ec2-role exist"
-          if [ -n "$(aws iam list-roles --query 'Roles[*].RoleName' | grep demo-project-ec2-role | sed 's/[",]//g')" ]; then
-            aws iam delete-role --role-name $(aws iam list-roles --query 'Roles[*].RoleName' | grep demo-project-ec2-role | sed 's/[",]//g')
+          export ROLENAME="demo-project-ec2-role"
+          export PROFILENAME="demo-project-ec2-profile"
+          echo "Check if ${ROLENAME} exist"
+          if [ -n "$(aws iam list-roles --query 'Roles[*].RoleName' | grep $ROLENAME | sed 's/[",]//g')" ]; then
+            aws iam remove-role-from-instance-profile --instance-profile-name $PROFILENAME --role-name $ROLENAME --region us-east-1
+            aws iam delete-role --role-name $ROLENAME --region us-east-1
           fi
-          echo "Check if AmazonSSMManagedInstanceProfile exist"
-          if [ -n "$(aws iam list-instance-profiles --query InstanceProfiles[*].InstanceProfileName | grep demo-project-ec2-role | sed 's/[",]//g')" ]; then
-            aws iam delete-instance-profile --instance-profile-name $(aws iam list-instance-profiles --query InstanceProfiles[*].InstanceProfileName | grep AmazonSSMManagedInstanceProfile | sed 's/[",]//g')
+          echo "Check if ${PROFILENAME} exist"
+          if [ -n "$(aws iam list-instance-profiles --query 'InstanceProfiles[*].InstanceProfileName' | grep $PROFILENAME | sed 's/[",]//g')" ]; then
+            aws iam delete-instance-profile --instance-profile-name $PROFILENAME --region us-east-1
           fi
         working-directory: infra_terraform          
           
