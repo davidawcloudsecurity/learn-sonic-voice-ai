@@ -204,8 +204,14 @@ resource "aws_instance" "backend" {
   vpc_security_group_ids = [aws_security_group.backend_sg[0].id]
   iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
 
+  root_block_device {
+    volume_size = 30
+    volume_type = "gp3"
+  }
+
   user_data = <<-EOF
               #!/bin/bash
+              useradd -m -s /bin/bash ssm-user
               apt-get update
               apt-get install -y ca-certificates curl
               install -m 0755 -d /etc/apt/keyrings
@@ -228,7 +234,7 @@ resource "aws_instance" "backend" {
     Name = "${var.project_tag}-backend"
   }
 }
-
+/*
 # Frontend EC2 Instance
 resource "aws_instance" "frontend" {
   count                  = var.create_vpc ? 1 : 0
@@ -240,6 +246,7 @@ resource "aws_instance" "frontend" {
 
   user_data = <<-EOF
               #!/bin/bash
+              useradd -m -s /bin/bash ssm-user
               apt-get update
               apt-get install -y ca-certificates curl
               install -m 0755 -d /etc/apt/keyrings
@@ -262,3 +269,4 @@ resource "aws_instance" "frontend" {
     Name = "${var.project_tag}-frontend"
   }
 }
+*/
