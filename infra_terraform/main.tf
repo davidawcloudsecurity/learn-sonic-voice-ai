@@ -206,15 +206,22 @@ resource "aws_instance" "backend" {
 
   user_data = <<-EOF
               #!/bin/bash
-              apt update
-              apt install -y git curl
-              curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-              apt install -y nodejs
+              apt-get update
+              apt-get install -y ca-certificates curl
+              install -m 0755 -d /etc/apt/keyrings
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+              chmod a+r /etc/apt/keyrings/docker.asc
+              echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+              apt-get update
+              apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+              groupadd docker
+              usermod -aG docker ssm-user
               cd /opt
-              git clone https://github.com/davidawcloudsecurity/learn-sonic-voice-ai.git app
-              cd app
-              npm install
-              npm install -g pm2
+              git clone -b amazon-aio https://ghproxy.cn/https://github.com/chen188/Astra.ai
+              cd Astra.ai
+              cp ./.env.example ./.env
+              cp ./agents/property.json.example ./agents/property.json
+              cp ./playground/.env.example ./playground/.env
               EOF
 
   tags = {
@@ -242,8 +249,7 @@ resource "aws_instance" "frontend" {
               apt-get update
               apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
               groupadd docker
-              usermod -aG docker ubuntu
-              docker run hello-world
+              usermod -aG docker ssm-user
               cd /opt
               git clone -b amazon-aio https://ghproxy.cn/https://github.com/chen188/Astra.ai
               cd Astra.ai
