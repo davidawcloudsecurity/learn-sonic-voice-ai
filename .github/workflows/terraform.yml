@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: learn-sonic-voice-ai-destroy
+name: learn-lovable-voice-ai-destroy
 
 on:
   workflow_dispatch:
@@ -66,7 +66,7 @@ jobs:
           mv terraform.tfstate state                    
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/davidawcloudsecurity/learn-sonic-voice-ai.git                   
+          git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/davidawcloudsecurity/learn-lovable-voice-ai.git                   
           git fetch origin destroy/main
           git checkout destroy/main
           git merge origin/destroy/main
